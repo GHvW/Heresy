@@ -1,3 +1,5 @@
 # Heresy
 
-Having a little too muhc fun with C#
+A playground for testing C# and functional programming, and ... `Maybe` ... having a little too much fun.
+
+
