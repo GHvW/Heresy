@@ -14,7 +14,7 @@ namespace Heresy {
 
         //public B Unwrap();
 
-        public Result GetOrHandle<Result>(Func<A, Result> handler, Func<B, Result> transform);
+        public B GetOrHandle(Func<A, B> handler);
 
         public IEither<Result, B> MapLeft<Result>(Func<A, Result> transform) where Result : notnull;
 
@@ -59,7 +59,7 @@ namespace Heresy {
 
             //public B Unwrap() => throw new Exception();
 
-            public Result GetOrHandle<Result>(Func<A, Result> handle, Func<B, Result> transform) => handle(this.data);
+            public B GetOrHandle(Func<A, B> handle) => handle(this.data);
 
             public Result Match<Result>(Func<A, Result> leftFn, Func<B, Result> rightFn) => leftFn(this.data);
 
@@ -94,7 +94,7 @@ namespace Heresy {
 
             //public B Unwrap() => this.data;
 
-            public Result GetOrHandle<Result>(Func<A, Result> handle, Func<B, Result> transform) => transform(this.data);
+            public B GetOrHandle(Func<A, B> handle) => this.data;
 
             public Result Match<Result>(Func<A, Result> lefnFn, Func<B, Result> rightFn) => rightFn(this.data);
 
@@ -111,7 +111,7 @@ namespace Heresy {
 
         public static IEither<A, B> Right(B data) => new Right_(data);
 
-        public static IEither<A, B> Cond<C>(bool condition, B right, A left) =>
+        public static IEither<A, B> Cond(bool condition, B right, A left) =>
             condition
                 ? Either<A, B>.Right(right)
                 : Either<A, B>.Left(left);
