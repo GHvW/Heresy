@@ -6,17 +6,25 @@ using Xunit;
 namespace Heresy.Test {
     public class EitherStaticTests {
 
-        //[Fact]
-        //public void SwitchTest() {
-        //    var right = new Either<string, int>.Right(10);
+        [Fact]
+        public void Match_Test() {
+            var right = Either<string, int>.Right(10);
 
-        //    var left = new Either<string, int>.Left("Hello World!");
+            var left = Either<string, int>.Left("Hello World!");
 
-        //    var rightResult =
-        //        right switch {
-        //            Either<string, int>.Left { data } => "hi";
-        //            Either.Right { data } => "bye";
-        //        }
-        //}
+            var rightResult =
+                right.Match(
+                    s => s.Length,
+                    r => r + 100);
+
+
+            var leftResult =
+                left.Match(
+                    s => s.Length,
+                    r => r + 100);
+
+            Assert.Equal(110, rightResult);
+            Assert.Equal(12, leftResult);
+        }
     }
 }

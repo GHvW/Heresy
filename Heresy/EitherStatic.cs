@@ -4,36 +4,32 @@ using System.Text;
 
 namespace Heresy {
 
-    public interface IEither<A, B>
-        where A : class
-        where B : class {
+    public interface IEither<A, B>  { 
 
-        public IEither<A, Result> Map<Result>(Func<B, Result> transform) where Result : class;
+        public IEither<A, Result> Map<Result>(Func<B, Result> transform);
 
-        public IEither<Result, B> MapLeft<Result>(Func<A, Result> transform) where Result : class;
+        public Result GetOrElse<Result>(Result r, Func<B, Result> transform);
 
-        public IEither<A, Result> Bind<Result>(Func<B, IEither<A, Result>> transform) where Result : class;
+        public Result GetOrHandle<Result>(Func<A, Result> handler, Func<B, Result> transform);
 
-        public IEither<A, Result> Or<Result>(IEither<A, Result> r) where Result : class;
+        public IEither<Result, B> MapLeft<Result>(Func<A, Result> transform);
 
-        public IEither<A, Result> OrEsle<Result>(Func<B, IEither<A, Result>> fn) where Result : class;
+        public IEither<A, Result> Bind<Result>(Func<B, IEither<A, Result>> transform);
+
+        public IEither<A, Result> Or<Result>(IEither<A, Result> r);
+
+        public IEither<A, Result> OrElse<Result>(Func<A, IEither<A, Result>> fn);
 
         public bool IsLeft(); // make get?
 
         public bool IsRight(); // make get?
-
-        public B? Right();
-
-        public A? Left();
 
         public Result Match<Result>(Func<A, Result> lefnFn, Func<B, Result> rightFn);
 
         //public Result Match<Result>(Action<Result> lefnAction, Action<Result> rightAction);
     }
 
-    public static class Either<A, B>
-        where A : class
-        where B : class {
+    public static class Either<A, B> {
 
         private class Left_ : IEither<A, B> {
 
@@ -43,29 +39,25 @@ namespace Heresy {
                 this.data = data;
             }
 
-            public IEither<A, Result> Bind<Result>(Func<B, IEither<A, Result>> transform) where Result : class => (IEither<A, Result>) this;
+            public IEither<A, Result> Bind<Result>(Func<B, IEither<A, Result>> transform) => (IEither<A, Result>) this;
 
             public bool IsLeft() => true;
 
             public bool IsRight() => false;
 
-            public IEither<A, Result> Map<Result>(Func<B, Result> transform) where Result : class => (IEither<A, Result>) this;
+            public IEither<A, Result> Map<Result>(Func<B, Result> transform) => (IEither<A, Result>) this;
 
-            public IEither<Result, B> MapLeft<Result>(Func<A, Result> transform) where Result : class => Either<Result, B>.Left(transform(this.data));
+            public IEither<Result, B> MapLeft<Result>(Func<A, Result> transform) => Either<Result, B>.Left(transform(this.data));
+
+            public Result GetOrElse<Result>(Result r, Func<B, Result> transform) => r;
+
+            public Result GetOrHandle<Result>(Func<A, Result> handle, Func<B, Result> transform) => handle(this.data);
 
             public Result Match<Result>(Func<A, Result> leftFn, Func<B, Result> rightFn) => leftFn(this.data);
 
-            public B? Right() => null;
+            public IEither<A, Result> Or<Result>(IEither<A, Result> r) => r;
 
-            public A? Left() => this.data;
-
-            public IEither<A, Result> Or<Result>(IEither<A, Result> r) where Result : class {
-                throw new NotImplementedException();
-            }
-
-            public IEither<A, Result> OrEsle<Result>(Func<B, IEither<A, Result>> fn) where Result : class {
-                throw new NotImplementedException();
-            }
+            public IEither<A, Result> OrElse<Result>(Func<A, IEither<A, Result>> fn) => fn(this.data);
         }
 
         private class Right_ : IEither<A, B> {
@@ -76,29 +68,25 @@ namespace Heresy {
                 this.data = data;
             }
 
-            public IEither<A, Result> Bind<Result>(Func<B, IEither<A, Result>> transform) where Result : class => transform(this.data);
+            public IEither<A, Result> Bind<Result>(Func<B, IEither<A, Result>> transform) => transform(this.data);
 
             public bool IsLeft() => false;
 
             public bool IsRight() => true;
 
-            public IEither<A, Result> Map<Result>(Func<B, Result> transform) where Result : class => Either<A, Result>.Right(transform(this.data));
+            public IEither<A, Result> Map<Result>(Func<B, Result> transform) => Either<A, Result>.Right(transform(this.data));
 
-            public IEither<Result, B> MapLeft<Result>(Func<A, Result> transform) where Result : class => (IEither<Result, B>) this;
+            public IEither<Result, B> MapLeft<Result>(Func<A, Result> transform) => (IEither<Result, B>) this;
+
+            public Result GetOrElse<Result>(Result r, Func<B, Result> transform) => transform(this.data);
+
+            public Result GetOrHandle<Result>(Func<A, Result> handle, Func<B, Result> transform) => transform(this.data);
 
             public Result Match<Result>(Func<A, Result> lefnFn, Func<B, Result> rightFn) => rightFn(this.data);
 
-            public B? Right() => this.data;
+            public IEither<A, Result> Or<Result>(IEither<A, Result> r) => (IEither<A, Result>) this;
 
-            public A? Left() => null;
-
-            public IEither<A, Result> Or<Result>(IEither<A, Result> r) where Result : class {
-                throw new NotImplementedException();
-            }
-
-            public IEither<A, Result> OrEsle<Result>(Func<B, IEither<A, Result>> fn) where Result : class {
-                throw new NotImplementedException();
-            }
+            public IEither<A, Result> OrElse<Result>(Func<A, IEither<A, Result>> fn) => (IEither<A, Result>) this;
         }
 
         public static IEither<A, B> Left(A data) => new Left_(data);
