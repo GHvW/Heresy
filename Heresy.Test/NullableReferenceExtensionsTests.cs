@@ -80,4 +80,22 @@ namespace Heresy.Test {
             Assert.NotNull(car4);
         }
     }
+
+    public class NullableValueExtensionsTest {
+
+        [Fact]
+        public void Map_Test() {
+
+            int? item = 10;
+
+            var res = item.Map(x => x * 10);
+
+            int? nullItem = null;
+
+            var nullRes = nullItem.Map(x => x * 100);
+
+            Assert.Equal(100, res);
+            Assert.Null(nullRes);
+        }
+    }
 }
