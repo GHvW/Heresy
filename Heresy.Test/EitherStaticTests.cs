@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Heresy.Test {
@@ -161,6 +162,23 @@ namespace Heresy.Test {
 
             var rightResult = right.OrElse(x => Either<string, int>.Right(x.Length * 200));
             var rightResult2 = right.OrElse(x => Either<string, int>.Left($"Oops {x}"));
+
+            Assert.Equal(Either<string, int>.Right(1200), leftResult);
+            Assert.Equal(Either<string, int>.Left("Oops: Hello World!"), leftResult2);
+            Assert.Equal(Either<string, int>.Right(10), rightResult);
+            Assert.Equal(Either<string, int>.Right(10), rightResult2);
+        }
+
+        [Fact]
+        public async Task Async_OrElse_Test() {
+
+            var (left, right) = Setup();
+
+            var leftResult = await left.OrElse(async x => Either<string, int>.Right(await Task.FromResult(x.Length * 100)));
+            var leftResult2 = await left.OrElse(async x => Either<string, int>.Left(await Task.FromResult($"Oops: {x}")));
+
+            var rightResult = await right.OrElse(async x => Either<string, int>.Right(await Task.FromResult(x.Length * 200)));
+            var rightResult2 = await right.OrElse(async x => Either<string, int>.Left(await Task.FromResult($"Oops {x}")));
 
             Assert.Equal(Either<string, int>.Right(1200), leftResult);
             Assert.Equal(Either<string, int>.Left("Oops: Hello World!"), leftResult2);
