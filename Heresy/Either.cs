@@ -11,13 +11,9 @@ namespace Heresy {
 
         public B UnwrapOr(B b);
 
-        //public B Unwrap();
-
         public B UnwrapOrHandle(Func<A, B> handler);
 
         public IEither<A, Out> Map<Out>(Func<B, Out> transform) where Out : notnull;
-
-        //public Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform) where Out : notnull;
 
         public IEither<Out, B> MapLeft<Out>(Func<A, Out> transform) where Out : notnull;
 
@@ -25,9 +21,9 @@ namespace Heresy {
 
         public IEither<A, B> Or(IEither<A, B> r);
 
-        public IEither<A, B> OrElse(Func<A, IEither<A, B>> fn);
+        public IEither<A, B> And(IEither<A, B> r);
 
-        //public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn);
+        public IEither<A, B> OrElse(Func<A, IEither<A, B>> fn);
 
         public bool IsLeft(); // make get?
 
@@ -35,6 +31,8 @@ namespace Heresy {
 
         public Out Fold<Out>(Func<A, Out> lefnFn, Func<B, Out> rightFn);
 
+        //public Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform) where Out : notnull;
+        //public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn);
         //public Out Fold<Out>(Action<Out> lefnAction, Action<Out> rightAction);
     }
 
@@ -60,15 +58,10 @@ namespace Heresy {
             public IEither<A, Out> Map<Out>(Func<B, Out> transform) where Out : notnull =>
                 Either<A, Out>.Left(this.data);
 
-            //public Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform) where Out : notnull =>
-            //    Task.FromResult(Either<A, Out>.Left(this.data));
-
             public IEither<Out, B> MapLeft<Out>(Func<A, Out> transform) where Out : notnull =>
                 Either<Out, B>.Left(transform(this.data));
 
             public B UnwrapOr(B b) => b;
-
-            //public B Unwrap() => throw new Exception();
 
             public B UnwrapOrHandle(Func<A, B> handle) => handle(this.data);
 
@@ -76,11 +69,15 @@ namespace Heresy {
 
             public IEither<A, B> Or(IEither<A, B> r) => r;
 
+            public IEither<A, B> And(IEither<A, B> r) => Either<A, B>.Left(this.data);
+
             public IEither<A, B> OrElse(Func<A, IEither<A, B>> fn) => fn(this.data);
 
             public bool Equals(Left_ other) => data.Equals(other.data);
 
             //public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn) => fn(this.data);
+            //public Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform) where Out : notnull =>
+            //    Task.FromResult(Either<A, Out>.Left(this.data));
         }
 
         private class Right_ : IEither<A, B>, IEquatable<Right_> {
@@ -99,9 +96,6 @@ namespace Heresy {
 
             public IEither<A, Out> Map<Out>(Func<B, Out> transform) where Out : notnull => Either<A, Out>.Right(transform(this.data));
 
-            // TODO : Check on this one
-            //public async Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform) where Out : notnull =>
-            //    Either<A, Out>.Right(await transform(this.data));
 
             public IEither<Out, B> MapLeft<Out>(Func<A, Out> transform) where Out : notnull => Either<Out, B>.Right(this.data);
 
@@ -115,12 +109,21 @@ namespace Heresy {
 
             public IEither<A, B> Or(IEither<A, B> r) => Either<A, B>.Right(this.data);
 
+            public IEither<A, B> And(IEither<A, B> r) =>
+                r.Fold(
+                    left => Either<A, B>.Left(left),
+                    right => Either<A, B>.Right(right));
+
             public IEither<A, B> OrElse(Func<A, IEither<A, B>> fn) => Either<A, B>.Right(this.data);
 
-            public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn) =>
-                Task.FromResult(Either<A, B>.Right(this.data));
-
             public bool Equals(Either<A, B>.Right_ other) => this.data.Equals(other.data);
+
+            //public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn) =>
+            //    Task.FromResult(Either<A, B>.Right(this.data));
+
+            //// TODO : Check on this one
+            //public async Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform) where Out : notnull =>
+            //    Either<A, Out>.Right(await transform(this.data));
         }
 
         public static IEither<A, B> Left(A data) => new Left_(data);

@@ -27,8 +27,8 @@ namespace Heresy.Test {
 
             var (left, right) = Setup();
 
-            var rightResult = right.GetOrHandle(x => x.Length * 100);
-            var leftResult = left.GetOrHandle(x => x.Length * 100);
+            var rightResult = right.UnwrapOrHandle(x => x.Length * 100);
+            var leftResult = left.UnwrapOrHandle(x => x.Length * 100);
 
             Assert.Equal(1200, leftResult);
             Assert.Equal(10, rightResult);
@@ -167,6 +167,23 @@ namespace Heresy.Test {
             Assert.Equal(Either<string, int>.Left("Oops: Hello World!"), leftResult2);
             Assert.Equal(Either<string, int>.Right(10), rightResult);
             Assert.Equal(Either<string, int>.Right(10), rightResult2);
+        }
+
+        [Fact]
+        public void And_Test() {
+
+            var (left, right) = Setup();
+
+            var leftResult = left.And(Either<string, int>.Right(200));
+            var leftResult2 = left.And(Either<string, int>.Left("Oops")); 
+
+            var rightResult = right.And(Either<string, int>.Right(200));
+            var rightResult2 = right.And(Either<string, int>.Left("Oops"));
+
+            Assert.Equal(Either<string, int>.Left("Hello World!"), leftResult);
+            Assert.Equal(Either<string, int>.Left("Hello World!"), leftResult2);
+            Assert.Equal(Either<string, int>.Right(200), rightResult);
+            Assert.Equal(Either<string, int>.Left("Oops"), rightResult2);
         }
 
         //[Fact]
