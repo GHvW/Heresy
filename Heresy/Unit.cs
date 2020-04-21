@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Heresy {
-    public class EitherVisitor {
 
-    }
+    public struct Unit {} // yep
 }

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Heresy.Test {
 
-    public class EitherStaticTests {
+    public class EitherTests {
 
         public static (IEither<string, int>, IEither<string, int>) Setup() => (Either<string, int>.Left("Hello World!"), Either<string, int>.Right(10));
 
@@ -35,18 +35,18 @@ namespace Heresy.Test {
         }
 
         [Fact]
-        public void Match_Test() {
+        public void Fold_Test() {
 
             var (left, right) = Setup();
 
             var rightResult =
-                right.Match(
+                right.Fold(
                     s => s.Length,
                     r => r + 100);
 
 
             var leftResult =
-                left.Match(
+                left.Fold(
                     s => s.Length - 10,
                     r => r - 10);
 
@@ -169,21 +169,40 @@ namespace Heresy.Test {
             Assert.Equal(Either<string, int>.Right(10), rightResult2);
         }
 
+        //[Fact]
+        //public async Task Async_OrElse_Test() {
+
+        //    var (left, right) = Setup();
+
+        //    var leftResult = await left.OrElse(async x => Either<string, int>.Right(await Task.FromResult(x.Length * 100)));
+        //    var leftResult2 = await left.OrElse(async x => Either<string, int>.Left(await Task.FromResult($"Oops: {x}")));
+
+        //    var rightResult = await right.OrElse(async x => Either<string, int>.Right(await Task.FromResult(x.Length * 200)));
+        //    var rightResult2 = await right.OrElse(async x => Either<string, int>.Left(await Task.FromResult($"Oops {x}")));
+
+        //    Assert.Equal(Either<string, int>.Right(1200), leftResult);
+        //    Assert.Equal(Either<string, int>.Left("Oops: Hello World!"), leftResult2);
+        //    Assert.Equal(Either<string, int>.Right(10), rightResult);
+        //    Assert.Equal(Either<string, int>.Right(10), rightResult2);
+        //}
+    }
+
+    public class ToEitherExtensionsTests {
+
         [Fact]
-        public async Task Async_OrElse_Test() {
+        public void Right_Test() {
 
-            var (left, right) = Setup();
+            var right = 10.Right<string, int>();
 
-            var leftResult = await left.OrElse(async x => Either<string, int>.Right(await Task.FromResult(x.Length * 100)));
-            var leftResult2 = await left.OrElse(async x => Either<string, int>.Left(await Task.FromResult($"Oops: {x}")));
+            Assert.Equal(Either<string, int>.Right(10), right);
+        }
 
-            var rightResult = await right.OrElse(async x => Either<string, int>.Right(await Task.FromResult(x.Length * 200)));
-            var rightResult2 = await right.OrElse(async x => Either<string, int>.Left(await Task.FromResult($"Oops {x}")));
+        [Fact]
+        public void Left_Test() {
 
-            Assert.Equal(Either<string, int>.Right(1200), leftResult);
-            Assert.Equal(Either<string, int>.Left("Oops: Hello World!"), leftResult2);
-            Assert.Equal(Either<string, int>.Right(10), rightResult);
-            Assert.Equal(Either<string, int>.Right(10), rightResult2);
+            var left = "Hello World!".Left<string, int>();
+
+            Assert.Equal(Either<string, int>.Left("Hello World!"), left);
         }
     }
 }

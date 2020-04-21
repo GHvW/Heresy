@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heresy.Test", "Heresy.Test\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Heresy", "Heresy\Heresy.csproj", "{A8A03157-7BE6-40DA-878D-3C12B1CBE606}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Heresy.Experimental", "Heresy.Experimental\Heresy.Experimental.csproj", "{245B696C-29DB-4B18-B97E-EC3176EF8E29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{A8A03157-7BE6-40DA-878D-3C12B1CBE606}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8A03157-7BE6-40DA-878D-3C12B1CBE606}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8A03157-7BE6-40DA-878D-3C12B1CBE606}.Release|Any CPU.Build.0 = Release|Any CPU
+		{245B696C-29DB-4B18-B97E-EC3176EF8E29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{245B696C-29DB-4B18-B97E-EC3176EF8E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{245B696C-29DB-4B18-B97E-EC3176EF8E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{245B696C-29DB-4B18-B97E-EC3176EF8E29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
