@@ -8,27 +8,39 @@ namespace Heresy {
 
     public static class TaskExtensions {
 
-        // should all of these take cancellation tokens?
+        // TODO : add other methods that tak cancellation tokens? 
 
-        // *Functor*
-        public static async Task<B> Map<A, B>(this Task<A> it, Func<A, B> transform, CancellationToken token = default) =>
+        // *Functor* Map
+        public static async Task<B> Select<A, B>(this Task<A> it, Func<A, B> transform, CancellationToken token = default) =>
             transform(await it);
 
-        // *Monad*
+        // *Monad* Bind
         // maybe im not completely crazy https://devblogs.microsoft.com/pfxteam/tasks-monads-and-linq/
-        public static async Task<B> Bind<A, B>(this Task<A> it, Func<A, CancellationToken, Task<B>> transform, CancellationToken token = default) =>
+        public static async Task<B> SelectMany<A, B>(this Task<A> it, Func<A, CancellationToken, Task<B>> transform, CancellationToken token = default) =>
             await transform(await it, token);
 
-        //public static async Task<A> Or<A>(this Task<A> it, Task<A> other, CancellationToken token = default) {
-        //    var winningTask = await Task.WhenAny(it, other);
-        //    return await winningTask;
-        //}
+        public static async Task<C> SelectMany<A, B, C>(this Task<A> it, Func<A, Task<B>> transform, Func<A, B, C> selector) {
+            var a = await it;
+            var b = await transform(a);
+            return selector(a, b);
+        }
 
-        //public static async Task<A> And<A>(this Task<A> it, Task<A> other, CancellationToken token = default) {
-        //    //var tasks = new Task<A>[] { it, other };
-        //    await Task.WhenAll(it, other);
-        //    return await other;
-        //}
+        // *Monad* join
+        public static async Task<D> Join<A, B, C, D>(this Task<A> it, 
+                                                          Task<B> other, 
+                                                          Func<A, C> getItKey, 
+                                                          Func<B, C> getOtherKey,
+                                                          Func<A, B, D> mapper) {
+            await Task.WhenAll(it, other); // does this let them complete such that .Result is ok?
+            var itKey = getItKey(it.Result);
+            var otherKey = getOtherKey(other.Result);
+
+            return EqualityComparer<C>.Default.Equals(itKey, otherKey)
+                ? mapper(it.Result, other.Result)
+                : default;
+        }
+
+        // TODO : Combine? Aggregate?
     }
 
     public static class TaskReturn {
