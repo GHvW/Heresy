@@ -10,6 +10,24 @@ namespace Heresy.Test {
 
         public static (IEither<string, int>, IEither<string, int>) Setup() => (new Either<string, int>.Left("Hello World!"), new Either<string, int>.Right(10));
 
+        public class Person {
+            public int Id { get; set; }
+            public string? Name { get; set; }
+        }
+
+        public class GameScore {
+            public int Id { get; set; }
+            public int Score { get; set; }
+            public int GamerId { get; set; }
+            public string? Game { get; set; }
+        }
+
+        public class Prize {
+            public int Id { get; set; }
+            public string? Name { get; set; }
+            public int Score { get; set; }
+        }
+
         [Fact]
         public void GetOrElse_Test() {
 
@@ -146,6 +164,47 @@ namespace Heresy.Test {
             Assert.Equal(new Either<string, int>.Left("Fail, and fail fast"), firstFail);
             Assert.Equal(new Either<string, int>.Left("y is a no good"), secondFail);
             Assert.Equal(new Either<string, int>.Left("so, so close"), thirdFail);
+        }
+
+        [Fact]
+        public void Join_Success_Test() {
+            var person = new Either<string, Person>.Right(new Person() { Id = 1, Name = "Dude" });
+            var gameScore = new Either<string, GameScore>.Right(new GameScore() { Id = 10, Score = 100, GamerId = 1, Game = "Warcraft 2" });
+            var prize = new Either<string, Prize>.Right(new Prize() { Id = 20, Name = "Super Awesome 100 Prize", Score = 100 });
+
+            //var result = (from x in new Either<string, Person>.Right(person)
+            //              join y in new Either<string, GameScore>.Right(gameScore) on x.Id equals y.GamerId
+            //              join z in new Either<string, Prize>.Right(prize) on y.Score equals z.Score
+            //              select (x.Name, y.Game, y.Score, z.Name));
+
+            //var result = 
+            //    person
+            //        .Select(p => {
+            //            return gameScore
+            //                .Select(g => (g, p))
+            //        })
+
+        }
+
+        [Fact]
+        public void Join_Query_Success_Test() {
+            var person = new Person() { Id = 1, Name = "Dude" };
+            var gameScore = new GameScore() { Id = 10, Score = 100, GamerId = 1, Game = "Warcraft 2" };
+            var prize = new Prize() { Id = 20, Name = "Super Awesome 100 Prize", Score = 100 };
+
+            var result = (from x in new Either<string, Person>.Right(person)
+                          join y in new Either<string, GameScore>.Right(gameScore) on x.Id equals y.GamerId
+                          join z in new Either<string, Prize>.Right(prize) on y.Score equals z.Score
+                          select (x.Name, y.Game, y.Score, z.Name));
+
+            Assert.Equal(new Either<string, (string, string, int, string)>.Right(("Dude", "Warcraft 2", 100, "Super Awesome 100 Prize")), result);
+        }
+
+        [Fact]
+        public void Join_Query_Fail_Test() {
+            var person = new { Id = 1, Name = "Dude" };
+            var gameScore = new { Id = 10, Score = 100, GamerId = 1, Game = "Warcraft 2" };
+            var prize = new { Id = 20, Name = "Super Awesome 100 Prize", Score = 100 };
         }
 
         [Fact]

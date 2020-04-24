@@ -37,8 +37,13 @@ namespace Heresy {
 
         public Out Fold<Out>(Func<A, Out> lefnFn, Func<B, Out> rightFn);
 
-        public Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform, CancellationToken token) where Out : notnull;
-        public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn, CancellationToken token);
+        public IEither<A, E> Join<C, D, E>(IEither<A, C> other, Func<B, D> getThisKey, Func<C, D> getOtherKey, Func<B, C, E> mapper)
+            where C : notnull
+            where D : notnull
+            where E : notnull;
+
+        //public Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform, CancellationToken token) where Out : notnull;
+        //public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn, CancellationToken token);
 
         //public Out Fold<Out>(Action<Out> lefnAction, Action<Out> rightAction);
     }
@@ -92,10 +97,22 @@ namespace Heresy {
                 return new Either<A, Out>.Left(this.data);
             }
 
-            public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn, CancellationToken token = default) => fn(this.data);
+            public IEither<A, E> Join<C, D, E>(IEither<A, C> other, Func<B, D> getThisKey, Func<C, D> getOtherKey, Func<B, C, E> mapper)
+                where C : notnull
+                where D : notnull
+                where E : notnull {
 
-            public Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform, CancellationToken token = default) where Out : notnull =>
-                Task.FromResult(Either<A, Out>.Left(this.data));
+                return new Either<A, E>.Left(this.data);
+            }
+
+            // TODO : make these extensions on Task<IEither<A, B>>?
+            //public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn, CancellationToken token = default) => fn(this.data);
+
+            //public Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform, CancellationToken token = default) where Out : notnull {
+            //    IEither<A, Out> left = new Either<A, Out>.Left(this.data);
+            //    return Task.FromResult(left);
+            //}
+
         }
 
         public class Right : IEither<A, B>, IEquatable<Right> {
@@ -149,12 +166,31 @@ namespace Heresy {
                                 .Return<A, Out>());
             }
 
-            public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn, CancellationToken token = default) =>
-                Task.FromResult(Either<A, B>.Right(this.data));
+            public IEither<A, E> Join<C, D, E>(IEither<A, C> other, Func<B, D> getThisKey, Func<C, D> getOtherKey, Func<B, C, E> mapper)
+                where C : notnull
+                where D : notnull
+                where E : notnull {
+                //throw new NotImplementedException();
+                return other.Select(c => {
+                    var thisKey = getThisKey(this.data);
+                    var otherKey = getOtherKey(c);
 
-            //// TODO : Check on this one, Task is a monad, deal with it differently?
-            public async Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform, CancellationToken token = default) where Out : notnull =>
-                Either<A, Out>.Right(await transform(this.data));
+                    return EqualityComparer<D>.Default.Equals(thisKey, otherKey)
+                        ? mapper(this.data, c)
+                        : default;
+                });
+            }
+
+
+            // TODO : add this as extension on Task<IEither> ?
+            //public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn, CancellationToken token = default) {
+            //    IEither<A, B> right = new Either<A, B>.Right(this.data);
+            //    return Task.FromResult(right);
+            //} 
+
+            ////// TODO : Check on this one, Task is a monad, deal with it differently?
+            //public async Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform, CancellationToken token = default) where Out : notnull =>
+            //    new Either<A, Out>.Right(await transform(this.data));
         }
 
         //public static IEither<A, B> Left(A data) => new Left_(data);
@@ -183,6 +219,7 @@ namespace Heresy {
             where B : notnull 
             => new Either<A, B>.Left(it);
 
+        // *Monad* return
         public static IEither<A, B> Return<A, B>(this B it)
             where A : notnull
             where B : notnull
