@@ -40,6 +40,20 @@ namespace Heresy.Test {
             Assert.Equal(10, rightResult);
         }
 
+
+        //[Fact]
+        //public void Match_Test() {
+        //    IEither<string, int> right = new Either<string, int>.Right(10);
+        //    IEither<string, int> left = new Either<string, int>.Left("Hello World");
+
+        //    int rightResult =
+        //        right switch
+        //        {
+        //            Either<string, int>.Right { data: r } => r,
+        //            Either<string, int>.Left { data: l } => l.Length
+        //        };
+        //}
+
         [Fact]
         public void GetOrHandle_Test() {
 

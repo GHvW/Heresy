@@ -25,7 +25,7 @@ namespace Heresy {
             return selector(a, b);
         }
 
-        // *Monad* join
+        // *Monad* or Monoid?
         public static async Task<D> Join<A, B, C, D>(this Task<A> it, 
                                                           Task<B> other, 
                                                           Func<A, C> getItKey, 
