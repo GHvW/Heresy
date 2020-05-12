@@ -3,7 +3,7 @@
 namespace Heresy {
     public static class NullableReferenceExtensions {
 
-        public static U? Map<T, U>(this T? x, Func<T, U> fn)
+        public static U? Select<T, U>(this T? x, Func<T, U> fn)
           where T : class
           where U : class {
 
@@ -15,7 +15,7 @@ namespace Heresy {
 
         }
 
-        public static U? FlatMap<T, U>(this T? x, Func<T, U?> fn)
+        public static U? SelectMany<T, U>(this T? x, Func<T, U?> fn)
             where T : class
             where U : class {
 
@@ -29,23 +29,21 @@ namespace Heresy {
 
     public static class NullableValueExtensions {
 
-        public static B? Map<A, B>(this A? x, Func<A, B> fn)
+        public static B? Select<A, B>(this A? x, Func<A, B> fn)
             where A : struct
             where B : struct {
 
-            return x switch
-            {
+            return x switch {
                 null => null,
                 A it => fn(it)
             };
         }
 
-        public static U? FlatMap<T, U>(this T? x, Func<T, U?> fn)
+        public static U? SelectMany<T, U>(this T? x, Func<T, U?> fn)
             where T : struct
             where U : struct {
 
-            return x switch
-            {
+            return x switch {
                 null => null,
                 T it => fn(it)
             };
@@ -54,23 +52,21 @@ namespace Heresy {
 
     public static class NullableValueToReferenceExtensions {
 
-        public static B? Map<A, B>(this A? x, Func<A, B> fn)
+        public static B? Select<A, B>(this A? x, Func<A, B> fn)
             where A : struct
             where B : class {
 
-            return x switch
-            {
+            return x switch {
                 null => null,
                 A it => fn(it)
             };
         }
 
-        public static U? FlatMap<T, U>(this T? x, Func<T, U?> fn)
+        public static U? SelectMany<T, U>(this T? x, Func<T, U?> fn)
             where T : struct
             where U : class {
 
-            return x switch
-            {
+            return x switch {
                 null => null,
                 T it => fn(it)
             };
@@ -79,23 +75,21 @@ namespace Heresy {
 
     public static class NullableReferenceToValueExtensions {
 
-        public static B? Map<A, B>(this A? x, Func<A, B> fn)
+        public static B? Select<A, B>(this A? x, Func<A, B> fn)
             where A : class
             where B : struct {
 
-            return x switch
-            {
+            return x switch {
                 null => null,
                 A it => fn(it)
             };
         }
 
-        public static U? FlatMap<T, U>(this T? x, Func<T, U?> fn)
+        public static U? SelectMany<T, U>(this T? x, Func<T, U?> fn)
             where T : class
             where U : struct {
 
-            return x switch
-            {
+            return x switch {
                 null => null,
                 T it => fn(it)
             };
