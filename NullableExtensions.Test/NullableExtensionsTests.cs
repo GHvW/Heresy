@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using Xunit;
+﻿using Xunit;
 
-namespace Heresy.Test {
+namespace NullableExtensions.Test {
 
-    public class NullableReferenceExtensionsTest {
+    public class NullableExtensionsTests {
         class PointC {
             public int X { get; }
             public int Y { get; }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Heresy {
+namespace NullableExtensions {
     public static class NullableReferenceExtensions {
 
         public static U? Select<T, U>(this T? x, Func<T, U> fn)

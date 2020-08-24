@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Heresy {
+namespace Either {
 
     public interface IEither<A, B>
         where A : notnull
@@ -37,10 +37,11 @@ namespace Heresy {
 
         public Out Fold<Out>(Func<A, Out> lefnFn, Func<B, Out> rightFn);
 
-        public IEither<A, E> Join<C, D, E>(IEither<A, C> other, Func<B, D> getThisKey, Func<C, D> getOtherKey, Func<B, C, E> mapper)
-            where C : notnull
-            where D : notnull
-            where E : notnull;
+        // TODO - do I care about this?
+        //public IEither<A, E> Join<C, D, E>(IEither<A, C> other, Func<B, D> getThisKey, Func<C, D> getOtherKey, Func<B, C, E> mapper)
+        //    where C : notnull
+        //    where D : notnull
+        //    where E : notnull;
 
         //public Task<IEither<A, Out>> Map<Out>(Func<B, Task<Out>> transform, CancellationToken token) where Out : notnull;
         //public Task<IEither<A, B>> OrElse(Func<A, Task<IEither<A, B>>> fn, CancellationToken token);
@@ -93,7 +94,6 @@ namespace Heresy {
                 where C : notnull
                 where Out : notnull {
 
-                //throw new NotImplementedException();
                 return new Either<A, Out>.Left(this.data);
             }
 
@@ -166,20 +166,21 @@ namespace Heresy {
                                 .Return<A, Out>());
             }
 
-            public IEither<A, E> Join<C, D, E>(IEither<A, C> other, Func<B, D> getThisKey, Func<C, D> getOtherKey, Func<B, C, E> mapper)
-                where C : notnull
-                where D : notnull
-                where E : notnull {
-                //throw new NotImplementedException();
-                return other.Select(c => {
-                    var thisKey = getThisKey(this.data);
-                    var otherKey = getOtherKey(c);
+            // TODO - do I really care about this?
+            //public IEither<A, E> Join<C, D, E>(IEither<A, C> other, Func<B, D> getThisKey, Func<C, D> getOtherKey, Func<B, C, E> mapper)
+            //    where C : notnull
+            //    where D : notnull
+            //    where E : notnull {
+            //    //throw new NotImplementedException();
+            //    return other.Select(c => {
+            //        var thisKey = getThisKey(this.data);
+            //        var otherKey = getOtherKey(c);
 
-                    return EqualityComparer<D>.Default.Equals(thisKey, otherKey)
-                        ? mapper(this.data, c)
-                        : default;
-                });
-            }
+            //        return EqualityComparer<D>.Default.Equals(thisKey, otherKey)
+            //            ? mapper(this.data, c)
+            //            : default;
+            //    });
+            //}
 
 
             // TODO : add this as extension on Task<IEither> ?
