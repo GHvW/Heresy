@@ -26,21 +26,41 @@ namespace Heresy {
         }
 
         // TODO  - class and struct return
-        //public static async Task<D?> Join<A, B, C, D>(this Task<A> it, 
-        //                                                  Task<B> other, 
-        //                                                  Func<A, C> getItKey, 
-        //                                                  Func<B, C> getOtherKey,
-        //                                                  Func<A, B, D> mapper) where D : struct {
-        //    await Task.WhenAll(it, other); // does this let them complete such that .Result is ok?
-        //    var itKey = getItKey(it.Result);
-        //    var otherKey = getOtherKey(other.Result);
+        public static async Task<D?> Join<A, B, C, D>(
+            this Task<A> it,
+            Task<B> other,
+            Func<A, C> getItKey,
+            Func<B, C> getOtherKey,
+            Func<A, B, D> mapper) where D : struct {
 
-        //    return EqualityComparer<C>.Default.Equals(itKey, otherKey)
-        //        ? mapper(it.Result, other.Result)
-        //        : default;
-        //}
+            await Task.WhenAll(it, other); // does this let them complete such that .Result is ok?
+            var itKey = getItKey(it.Result);
+            var otherKey = getOtherKey(other.Result);
 
+            return EqualityComparer<C>.Default.Equals(itKey, otherKey)
+                ? mapper(it.Result, other.Result)
+                : default;
+        }
         // TODO : Combine? Aggregate?
+    }
+
+    public static class TaskExtensionRef {
+
+        public static async Task<D?> Join<A, B, C, D>(
+            this Task<A> it,
+            Task<B> other,
+            Func<A, C> getItKey,
+            Func<B, C> getOtherKey,
+            Func<A, B, D> mapper) where D : class {
+
+            await Task.WhenAll(it, other);
+            var itKey = getItKey(it.Result);
+            var otherKey = getOtherKey(other.Result);
+
+            return EqualityComparer<C>.Default.Equals(itKey, otherKey)
+                ? mapper(it.Result, other.Result)
+                : default;
+        }
     }
 
     public static class TaskReturn {
