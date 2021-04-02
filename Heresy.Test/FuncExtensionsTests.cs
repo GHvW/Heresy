@@ -40,7 +40,7 @@ namespace Heresy.Test {
         }
 
         [Fact]
-        public void Tupled_AndThen_Test() {
+        public void Tupled_AndThen_Play() {
 
             Func<int, int, int> adder = (a, b) => a + b;
 
